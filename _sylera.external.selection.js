@@ -26,7 +26,7 @@
 	}
 	//
 	return range_block;
-}
+};
 
 
 

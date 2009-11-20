@@ -46,7 +46,7 @@ _sylera.external.localfile
 	}
 	//
 	return file.exists();
-}
+};
 
 
 
@@ -63,7 +63,7 @@ _sylera.external.localfile
 		init(exe);
 		run(_wait, _args, _args.length);
 	}
-}
+};
 
 
 
