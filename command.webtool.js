@@ -3,10 +3,10 @@
 // ==UserScript==
 // @name command.webtool
 // @version 0.9
-// @require ./lib/_sylera.external.element.js
-// @require ./lib/_sylera.external.selection.js
-// @require ./lib/_sylera.external.charconv.js
-// @require ./lib/_sylera.external.localfile.js
+// @require ./_sylera.external.element.js
+// @require ./_sylera.external.selection.js
+// @require ./_sylera.external.charconv.js
+// @require ./_sylera.external.localfile.js
 // @description ページにツールバー的なものを組み込むコマンド
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -150,10 +150,10 @@ _this_.init = function (_id){
 	//
 	try {
 		with( _sylera ){
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.element.js');
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.selection.js');
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.charconv.js');
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.localfile.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.element.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.selection.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.charconv.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.localfile.js');
 		}
 	}
 	catch(_e){

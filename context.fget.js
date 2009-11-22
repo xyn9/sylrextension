@@ -3,8 +3,8 @@
 // ==UserScript==
 // @name context.fget
 // @version 0.9
-// @require ./lib/_sylera.external.charconv.js
-// @require ./lib/_sylera.external.localfile.js
+// @require ./_sylera.external.charconv.js
+// @require ./_sylera.external.localfile.js
 // @description FlashGetでダウンロードするための補助スクリプト
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -119,8 +119,8 @@ _this_.init = function (_id){
 	;
 	//
 	try {
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.charconv.js');
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.localfile.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.charconv.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.localfile.js');
 	}
 	catch(_e){
 		alert('[include error]'+ _e.message);

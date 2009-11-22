@@ -4,7 +4,7 @@
 // @name command.toggle_css
 // @version 0.9
 // @include
-// @require ./lib/_sylera.external.evaluateXPath.js
+// @require ./_sylera.external.evaluateXPath.js
 // @description スタイルシートの有効・無効を切り替えるコマンド
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -86,7 +86,7 @@ _this_.init = function (_id){
 	$ID = _id;
 	//
 	try {
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.evaluateXPath.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.evaluateXPath.js');
 	}
 	catch(_e){
 		alert($ID +'\n[include error]'+ _e.message);

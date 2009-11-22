@@ -4,7 +4,7 @@
 // @name autoexec.livedoor-reader
 // @version 0.9
 // @include reader.livedoor.com
-// @require ./lib/_sylera.external.element.js
+// @require ./_sylera.external.element.js
 // @description livedoor Reader を使いやすく変える自動実行拡張
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -379,7 +379,7 @@ _this_.init = function (_id){
 	$ID = _id;
 	//
 	try {
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.element.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.element.js');
 	}
 	catch(_e){
 		alert($ID +'\n[include error]'+ _e.message);

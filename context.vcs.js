@@ -5,9 +5,9 @@
 // @version 0.9
 // @require ./lib/wx320k_vcs.js
 // @require ./lib/printf.js
-// @require ./lib/_sylera.external.selection.js
-// @require ./lib/_sylera.external.charconv.js
-// @require ./lib/_sylera.external.localfile.js
+// @require ./_sylera.external.selection.js
+// @require ./_sylera.external.charconv.js
+// @require ./_sylera.external.localfile.js
 // @description ページ内容からVCS形式のスケジュール登録ファイルを作成する
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -125,9 +125,9 @@ function _vcs_parse_selection(_sel){
 		with( _sylera ){
 			include(_sylera.__EXTENSION_DIR__ +'/lib/printf.js');
 			include(_sylera.__EXTENSION_DIR__ +'/lib/wx320k_vcs.js');
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.selection.js');
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.charconv.js');
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.localfile.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.selection.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.charconv.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.localfile.js');
 		}
 		//
 	}

@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name context.translation
 // @version 0.9
-// @require ./lib/_sylera.external.element.js
+// @require ./_sylera.external.element.js
 // @description 選択範囲またはページ全体を和英翻訳する
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -141,7 +141,7 @@ _this_.init = function (_id){
 	//
 	try {
 		with( _sylera ){
-			include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.element.js');
+			include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.element.js');
 		}
 	}
 	catch(_e){

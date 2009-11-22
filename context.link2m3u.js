@@ -3,9 +3,9 @@
 // ==UserScript==
 // @name context.link2m3u
 // @version 0.9
-// @require ./lib/_sylera.external.charconv.js
-// @require ./lib/_sylera.external.localfile.js
-// @require ./lib/_sylera.external.evaluateXPath.js
+// @require ./_sylera.external.charconv.js
+// @require ./_sylera.external.localfile.js
+// @require ./_sylera.external.evaluateXPath.js
 // @description ページ内のメディアらしきリンクを拾ってm3uプレイリストを作成する
 // @homepage http://xyn9.github.com/sylrextension
 //
@@ -47,9 +47,9 @@ if(! _sylera.include){
 (function (){
 	//
 	try {
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.charconv.js');
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.localfile.js');
-		_sylera.include(_sylera.__EXTENSION_DIR__ +'/lib/_sylera.external.evaluateXPath.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.charconv.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.localfile.js');
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.evaluateXPath.js');
 	}
 	catch(_e){
 		alert('[include error]'+ _e.description);
