@@ -4,7 +4,7 @@
 // @name context.translation
 // @version 0.9
 // @require ./_sylera.external.element.js
-// @description 選択範囲またはページ全体を和英翻訳する
+// @description 選択範囲またはページ全体を英和翻訳する
 // @homepage http://xyn9.github.com/sylrextension
 //
 // @author xyn9 <xyn9.mail@gmail.com>
@@ -111,7 +111,7 @@ _this_.text_trans = function (_selection){
 	document.body.appendChild( _sylera.external.element('script', {
 		type: 'text/javascript'
 		, src: (
-			'http://pipes.yahoo.com/pipes/pipe.run?_id=16d83292b9ecd548a43ee078a1b3e8d2&_render=json'
+			'	http://pipes.yahoo.com/xyn9/bablefish_en2ja?_render=json'
 			+ '&_callback='+ $ID +'.text_trans_cb.'+ sel_block.id
 			+ '&s='+ encodeURIComponent(result_block.value).replace(/%20/g,'+')
 		)
