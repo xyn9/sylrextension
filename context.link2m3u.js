@@ -126,10 +126,7 @@ if(! _sylera.include){
 		)
 	){
 		//
-		confirm('open ?')
-		? _sylera.external.localfile.run('C:\\bin\\shell_exec.exe', [$m3u.path], true)
-		: (location = 'file:///'+ $m3u.path)
-		;
+		location = 'file:///'+ $m3u.path;
 	}else{
 		alert('fail@save');
 	}
