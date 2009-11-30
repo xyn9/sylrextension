@@ -8,7 +8,7 @@
 // @require ./_sylera.external.selection.js
 // @require ./_sylera.external.charconv.js
 // @require ./_sylera.external.localfile.js
-// @description ページ内容からVCS形式のスケジュール登録ファイルを作成する
+// @description 選択範囲の内容からVCS形式のスケジュール登録ファイルを作成する
 // @homepage http://xyn9.github.com/sylrextension
 //
 // @author xyn9 <xyn9.mail@gmail.com>

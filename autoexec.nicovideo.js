@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.nicovideo
-// @version 0.9
+// @version 0.91
 // @include nicovideo.jp
 // @description ニコニコ動画用自動実行拡張
 // @homepage http://xyn9.github.com/sylrextension
@@ -49,46 +49,80 @@ var $ID = '_autoexec_';
 var $v_id = video_id;//location.pathname.match(/[a-z\d]+$/i);
 //
 // ------------------------------------------------------------
-_this_.add_old_player_link = function (){
-	try {
-		var old = document.createElement('span');
-		with( old ){
-			id = $ID +'_add_old_player_link';
-			innerHTML = '&nbsp;['+ '新/旧'.link(
-				location.pathname + (
-					(/oldplayer/i).test(location.search) ? '' : '?oldplayer=1'
-				)
-			) +']';
-		}
-		document.getElementsByTagName('h1')[0].appendChild(old);
+_this_.player_links = function (){
+	//
+	function create_link(__opt, __style){
+		return _sylera.external.element('a', {
+			href: __opt.href
+			, style: __style
+		}, [ document.createTextNode(__opt.text) ]);
 	}
-	catch(_e){}
+	//
+	document.getElementsByTagName('h1')[0].appendChild(
+		//
+		_sylera.external.element('span', {
+			id:($ID +'_player_links')
+			, style: {
+				paddingLeft: '1em'
+				, fontSize:'80%'
+			}
+		}, [
+			//
+			create_link(
+				(
+					(/eco=1/i).test(location.search)
+					? {href:location.pathname, text:'ﾉｰﾏﾙ'}
+					: {href:location.pathname +'?eco=1', text:'ｴｺﾉﾐｰ'}
+				)
+				, {
+					padding: '0.25em'
+					, backgroundColor: 'rgb(102,111,111)'
+					, color:'white'
+					, textDecoration: 'none'
+				}
+			)
+			,
+			//
+			create_link(
+				(
+					(/oldplayer=1/i).test(location.search)
+					? {href:location.pathname, text:'現'}
+					: {href:location.pathname +'?oldplayer=1', text:'旧'}
+				)
+				, {
+					padding: '0.25em'
+					, backgroundColor: 'black'
+					, color:'white'
+					, textDecoration: 'none'
+				}
+			)
+		])
+	);
+	//
 };
 
 
 
 
 // ------------------------------------------------------------
-_this_.create_dl_links = function (){
+_this_.dl_links = function (){
 	//
-	var $_label = $ID +'_create_dl_links';
+	var $_label = $ID +'_dl_links';
 	//
 	var block = document.getElementById($_label);
-	var $_box = document.getElementById('video_controls');
+	var $_box = document.getElementById('WATCHHEADER');
 	//
 	if((block != null) || ($_box == null)){ return ; }
 	//
-	block = document.createElement('div');
-	with( block ){
-		id = $_label;
-		style.fontSize = '12px';
-		style.fontWeight = 'bold';
-		style.paddingBottom = '7px';
-		//
-		appendChild( document.createTextNode('ダウンロード： ') );
-	}
+	block = _sylera.external.element('div', {
+		id: $_label
+		, style: {
+			padding: '0.5em'
+			, fontSize: '90%', fontWeight: 'bold'
+		}
+	}, [ document.createTextNode('ダウンロード： ') ]);
 	//
-	$_box.insertBefore(block, $_box.firstChild);
+	$_box.appendChild(block);
 	// ------------------------------------------------------------
 	//
 	var $_http = new XMLHttpRequest();
@@ -98,25 +132,22 @@ _this_.create_dl_links = function (){
 		//
 		onload = function (){
 			//
-			function create_link(_inner, _href, _color){
-				var link = document.createElement('a');
-				with( link ){
-					href = _href;
-					style.color = _color;
-					//
-					appendChild( document.createTextNode(_inner) );
-				}
-				return link;
-			}
-			//
 			var src_text = $_http.responseText;
 			var v_url = decodeURIComponent( src_text.replace(/.+&url=([^&]+)&.+/i, '$1') );
 			//
 			with( document.getElementById($_label) ){
 				appendChild( document.createTextNode($v_id + ' / ') );
-				appendChild( create_link('high', v_url.replace(/low$/i,''), 'red') );
+				appendChild(
+					_sylera.external.element('a', {
+						href: v_url.replace(/low$/i,''), style: {color:'red'}
+					}, [ document.createTextNode('high') ])
+				);
 				appendChild( document.createTextNode(' ') );
-				appendChild( create_link('low', v_url.replace(/(low)?$/i,'low'), 'gray') );
+				appendChild(
+					_sylera.external.element('a', {
+						href: v_url.replace(/(low)?$/i,'low'), style: {color:'gray'}
+					}, [ document.createTextNode('low') ])
+				);
 			}
 		};
 		//
@@ -134,10 +165,18 @@ _this_.init = function (_id){
 	//
 	$ID = _id;
 	//
+	try {
+		_sylera.include(_sylera.__EXTENSION_DIR__ +'/_sylera.external.element.js');
+	}
+	catch(_e){
+		alert($ID +'\n[include error]'+ _e.message);
+		return ;
+	}
+	//
 	if( (/\/watch\//i).test(location.pathname) ){
 		//
-		_this_.create_dl_links();
-		_this_.add_old_player_link();
+		_this_.dl_links();
+		_this_.player_links();
 		//
 	}
 	//
@@ -178,4 +217,3 @@ _this_.init = function (_id){
 
 
 //
-
