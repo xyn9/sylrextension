@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.youtube
-// @version 0.9
+// @version 0.91
 // @include youtube.com
 // @require ./_sylera.external.element.js
 // @description YouTube用自動実行拡張
@@ -12,12 +12,6 @@
 // @license (CC) Attribution Share Alike; http://creativecommons.org/licenses/by-sa/2.1/jp
 // ==UserScript==
 //
-
-
-// autoexec
-
-
-
 
 
 //
@@ -59,23 +53,20 @@ _this_.create_dl_links = function (){
 	var $_label = $ID +'_dl';
 	//
 	try {
-		var $_v_id =
-		yt.config_.SWF_ARGS['video_id'] +'&t='+ yt.config_.SWF_ARGS['t']
-		;
+		var $_v_id = yt.config_['VIDEO_ID'] +'&t='+ yt.config_['XSRF_TOKEN'];
 	} catch(_e){ return; }
-	var $_title = document.getElementById('watch-vid-title');
+	//
+	var $_title = (document.getElementsByTagName('h1'))[0]
 	//
 	if(
 		(document.getElementById($_label) == null)
-		&& (
-			($_title != null)
-			|| (($_title = document.getElementById('vidTitle')) != null)
-		)
+		&& ($_title != null)
 	){
+/*
 		//
 		function dl_link(_fmt, _color, _label){
 			return _sylera.external.element('a', {
-				href: '/get_video?video_id=' + $_v_id +'&fmt='+ _fmt
+				href: '/get_video?fmt='+ _fmt +'&video_id='+ $_v_id
 				, style: {
 					margin:'auto 0.33em auto 0.33em'
 					, color:_color
@@ -83,6 +74,7 @@ _this_.create_dl_links = function (){
 				}
 			}, [ document.createTextNode(_label) ]);
 		}
+ */
 		//
 		function fmt_link(_fmt, _color, _label){
 			return _sylera.external.element('a', {
@@ -101,6 +93,7 @@ _this_.create_dl_links = function (){
 			_sylera.external.element('div',{id:$_label})
 		);
 		//
+		$_title.style.cssText = 'height:auto; max-height:2.5em; padding:auto;';
 		$_title.appendChild(_sylera.external.element('p', {
 			id: $_label+ '_fmt_link'
 			, style: {
@@ -109,15 +102,16 @@ _this_.create_dl_links = function (){
 			}
 		}, [
 			document.createTextNode(' ')
-			, fmt_link(1, 'black', 'flv'), _T(' | ')
+			, fmt_link(5, 'black', 'flv'), _T(' | ')
 			, fmt_link(6, 'gray', 'flv2'), _T(' | ')
 			, fmt_link(34, 'gray', 'flv-low'), _T(' | ')
 			, fmt_link(35, 'gray', 'flv-high'), _T(' | ')
 			, fmt_link(18, 'red', 'mp4'), _T(' | ')
 			, fmt_link(22, 'blue', 'HD')
 		]) );
+/*
 		//
-		document.getElementById('watch-player-div')
+		document.getElementById('movie_player').parentNode
 		.appendChild(_sylera.external.element('p', {
 			id: $_label +'_dl_link'
 			, style: {
@@ -125,18 +119,19 @@ _this_.create_dl_links = function (){
 				, color:'darkgray'
 				, fontSize:'12px', fontWeight:'normal'
 			}
-			, align:'right'
+			, align:'center'
 		}, [
 			_sylera.external.element('b', {
 				style: {color:'black'}
 			}, [_T('Download: ')])
-			, dl_link('', 'black', 'flv'), _T(' | ')
+			, dl_link(5, 'black', 'flv'), _T(' | ')
 			, dl_link(6, 'gray', 'flv2'), _T(' | ')
 			, dl_link(34, 'gray', 'flv-low'), _T(' | ')
 			, dl_link(35, 'gray', 'flv-high'), _T(' | ')
 			, dl_link(18, 'red', 'mp4'), _T(' | ')
 			, dl_link(22, 'blue', 'HD')
 		]) );
+ */
 		//
 	}
 	//
@@ -147,7 +142,6 @@ _this_.create_dl_links = function (){
 
 
 // ------------------------------------------------------------
-/*
 _this_.suspend = function (){
 	//
 	try {
@@ -160,7 +154,30 @@ _this_.suspend = function (){
 	catch(_e){ }
 	//
 };
- */
+
+
+
+
+
+// ------------------------------------------------------------
+_this_.show_description = function (){
+	//
+	try {
+		var desc_element = document.getElementById('watch-description');
+		with( desc_element.style ){
+			height = 'auto';
+			overflow = 'visible';
+		}
+		with( (desc_element.getElementsByTagName('div'))[0].style ){
+			height = 'auto';
+			overflow = 'visible';
+			overflowX = 'visible';
+			overflowY = 'visible';
+		}
+	}
+	catch(_e){ }
+	//
+};
 
 
 
@@ -181,6 +198,7 @@ _this_.init = function (_id){
 	//
 	if( (/\/watch/i).test(location.pathname) ){
 		//
+		_this_.show_description();
 		_this_.create_dl_links();
 		//
 	}
@@ -214,7 +232,7 @@ _this_.init = function (_id){
 		_autoexec_youtube.init(_label);
 	}
 	//
-	// _autoexec_youtube.suspend();
+	_autoexec_youtube.suspend();
 	//
 })( '_autoexec_youtube' );
 //
@@ -224,4 +242,3 @@ _this_.init = function (_id){
 
 
 //
-

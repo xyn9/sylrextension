@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.nicovideo
-// @version 0.91
+// @version 0.92
 // @include nicovideo.jp
 // @description ニコニコ動画用自動実行拡張
 // @homepage http://xyn9.github.com/sylrextension
@@ -46,7 +46,7 @@ var _this_ = this;
 //
 var $ID = '_autoexec_';
 //
-var $v_id = video_id;//location.pathname.match(/[a-z\d]+$/i);
+var $V_ID, $V_LABEL;
 //
 // ------------------------------------------------------------
 _this_.player_links = function (){
@@ -58,13 +58,15 @@ _this_.player_links = function (){
 		}, [ document.createTextNode(__opt.text) ]);
 	}
 	//
-	document.getElementsByTagName('h1')[0].appendChild(
+	var $_header = document.getElementById('des_2');
+	$_header.insertBefore(
 		//
-		_sylera.external.element('span', {
+		_sylera.external.element('div', {
 			id:($ID +'_player_links')
 			, style: {
-				paddingLeft: '1em'
+				padding: '1em'
 				, fontSize:'80%'
+				, fontWeight:'bold'
 			}
 		}, [
 			//
@@ -97,7 +99,8 @@ _this_.player_links = function (){
 				}
 			)
 		])
-	);
+	//
+	, $_header.firstChild);
 	//
 };
 
@@ -128,15 +131,25 @@ _this_.dl_links = function (){
 	var $_http = new XMLHttpRequest();
 	with( $_http ){
 		//
-		open('GET', 'http://www.nicovideo.jp/api/getflv?v=' + $v_id, true);
+		open('GET', 'http://www.nicovideo.jp/api/getflv?v=' + $V_ID, true);
 		//
 		onload = function (){
 			//
 			var src_text = $_http.responseText;
-			var v_url = decodeURIComponent( src_text.replace(/.+&url=([^&]+)&.+/i, '$1') );
+			var v_url = decodeURIComponent( src_text.replace(/.+&url=([^&]+)&.+/i,"$1") )
+			.replace(/(smile\?s=[\d\.]+)$/i,"$1as3")
+			;
 			//
 			with( document.getElementById($_label) ){
-				appendChild( document.createTextNode($v_id + ' / ') );
+				appendChild( document.createTextNode(
+					$V_LABEL
+					+'.'+ (
+						/smile\?([a-z])=/.test( v_url.toLowerCase() )
+						? ({'v':'flv', 'm':'mp4', 'n':'swf', 's':'swf'})[ RegExp.$1 ]
+						: 'flv'
+					)
+					+ ' / '
+				) );
 				appendChild(
 					_sylera.external.element('a', {
 						href: v_url.replace(/low$/i,''), style: {color:'red'}
@@ -173,10 +186,18 @@ _this_.init = function (_id){
 		return ;
 	}
 	//
+	try {
+		$V_ID = Video.v;
+		$V_LABEL = Video.id;
+	}
+	catch(_e){
+		$V_ID = $V_LABEL = location.pathname.match(/[^\/]+$/);
+	}
+	//
 	if( (/\/watch\//i).test(location.pathname) ){
 		//
-		_this_.dl_links();
 		_this_.player_links();
+		_this_.dl_links();
 		//
 	}
 	//
