@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name command.webtool
-// @version 0.9
+// @version 0.93
 // @require ./_sylera.external.element.js
 // @require ./_sylera.external.selection.js
 // @require ./_sylera.external.charconv.js
@@ -106,7 +106,10 @@ _this_.add_frame = function (_frame){
 		_sylera.external.element('nobr', {
 			id: ($ID +'_frame_'+ $Z_INDEX)
 			, className: 'toolframe'
-			, style: {display: 'block'}
+			, style: {
+				display: 'block'
+				, height: _frame.style.height
+			}
 		}, [
 			_this_.BTN_X()
 			, _frame
@@ -188,6 +191,7 @@ _this_.init = function (_id){
 				,
 				'#'+ $ID +' img{'
 					, 'padding:0 1px 0 2px;'
+					, 'align:center;'
 					, 'vertical-align:middle;'
 					, 'cursor:pointer;'
 				, '}'
@@ -200,7 +204,7 @@ _this_.init = function (_id){
 				'#'+ $ID_SUB +'{'
 					, 'display:none;'
 					, 'direction:rtl;'
-					, 'width:100%; height:'+ parseInt(window.innerHeight *0.75) +'px;'
+					, 'width:100%; height:'+ parseInt(window.innerHeight *0.67) +'px;'
 					, 'overflow:scroll;'
 				, '}'
 				,
@@ -274,7 +278,7 @@ _this_.init = function (_id){
 
 // アイコンの並び順を指定
 //
-	})('subscribe | sendmail | atode | del_icio_us | i_know | hatena_bm | twib | tumblr | kwout | gyotaku | web_archive'); } // _command_webtool
+	})('subscribe | sendmail | del_icio_us | i_know | hatena_bm | twitter | twib | tweetbuzz | tumblr | kwout | gyotaku | web_archive'); } // _command_webtool
 //
 
 
@@ -347,9 +351,11 @@ _command_webtool.$TOOL = { //
 			,
 			href: ('http://megalodon.jp/?url='+ encodeURIComponent(location.href.replace(/#.*$/,'')))
 			, style: {
-				backgroundColor: 'whitesmoke'
-				, color: 'blue'
-				, fontWeight: 'bold'
+				display: 'inline'
+				, padding: '3px'
+				, background: '#6699ff none'
+				, color: 'ccccff'
+				, font: 'bold 15px fantasy'
 				, textDecoration: 'none'
 			}
 		}, [ document.createTextNode(' 魚 ') ]);
@@ -404,7 +410,7 @@ _command_webtool.$TOOL = { //
 				//
 				var url = location.href.replace(/#.*$/,'');
 				var subscr_list = [
-					'http://r.hatena.ne.jp/append/'+ encodeURIComponent(url)
+					'https://www.bloglines.com/sub/'+ url
 					, 'http://reader.livedoor.com/subscribe/'+ url
 				];
 				//
@@ -569,42 +575,6 @@ _command_webtool.$TOOL = { //
 
 	// ------------------------------------------------------------
 	,
-	atode:
-	//
-	(function (){
-		//
-		return _command_webtool._E('img', {
-			alt: ' あとで読む '
-			,
-			src: 'data:image/gif;base64,R0lGODlhQgAUAOYAAP////7+/v39/fz8/Pv7+/r6+vn5+fj4+Pn59fj49vj49Pf39/f38/X19fb28vX18/X18fT09PT08PPz7/Ly7vHx7fDw7vDw7O/v7+/v6+7u7u/v7e7u6u3t6ezs7Ozs6evr6+zs6uvr6Ovr6erq6Orq5+np5ufn5Obm4+Xl5ebm5OPj3+Li3uHh4eLi3+Hh3uHh3eDg3N/f293d293d2t3d2dzc3Nvb19ra1tjY2NnZ1djY1NfX09bW0tbW09XV0dPT09TU0NPT0tPTz87OzsrKysrKycXFxcHBwMDAwLu7u7e3t7i4t7Kysq+vrq6urqioqKWlpaampZ+fn5ycnJWVlZOTk4yMjIqKioKCgoGBgXh4eG9vb29vbmZmZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAUUAAAALAAAAABCABQAAAf/gAAAK4QrLIeIiYqLjI2Oj4iCgwGUlZaXmJmam5yZMpOdoaKjoQU0K6SpqqMEBDWoq7GylgUFNy6bRzmaEbJElERNAb2jBgY4LJtEXi0RxJQRVVuYzyBEUFlZvSA5UCABTdpXxNFVmwcNOsmYTU1VXlde5pZNXsNKxDlT0l5eW02/AuTIoaSJviw5iPRqAW4LlCOZ0O1Yh0lfFSK7Lh2xp4TLNEpcsijJcaQXwQAt9A1sMkUJFEogpniEQqQFPksLIkzcNOVKFi5VGFYC4e/ft0tTKOW4UoXYkRYGSWqjBIVLwCZKsuCMwIPFgq9gF9jAouWJlRRUuGj4qkELFSBh/8MWeQJ2yVcgQJJgefIkSZQia5MkoWJ3AZUnXMBGwOCha9yvWpIgjrIAiBe4C7AkeRz2CeW4e7UUWYJlL1gsRbik+IpltWLGXRPIni3EixEtXWQ78aJCthchs2f0np0AiRcmG4hjcYJFCBUpy43IRlJ6NhYmxB9YCOGDBXHZKrpsYWJkg5MuSGYj6dKvfXLiVPppsU5FC5ItKkprmTHdS2ksXliR3QYjdPfdgUYAd+AMQjQ43HczOIGdbkJE2JsRTjjxXgIqNCjEg7I9sAEJPbCAwIkopqjiiiy26OKLK0rAQQlBmKjAjQzk6MCOPPbo449ABimkkBeUcEIQMNyoAEsETFJQwZNQRinllFRWaWWVHZSAAgo/ABDDjhSEmcGYHZRp5plopqnmmmymaYIJKAwhCQ104oADD3j6oOeefPbp55+ABvrnEHICEAgAOw=='
-			, border: 0
-			,
-			onclick: (function (){
-				//
-				with( document.body ){
-					removeChild( document.getElementById('_command_webtool') );
-					appendChild( _command_webtool._E('script', {
-						charset: 'UTF-8'
-						, type: 'text/javascript'
-						, src: (
-							'http://atode.cc/'+ (confirm('HTML ?') ? '' : 'm')+ 'bjs.php?'
-							+ 'c=1'
-							+ '&s='+ '(id)' // http://atode.cc/bjs.php?s=(id)
-							+ '&d='+ (new Date()).getMilliseconds()
-						)
-					}) );
-					//
-				}
-				//
-			})
-			//
-		});
-		//
-	})
-
-
-	// ------------------------------------------------------------
-	,
 	sendmail:
 	//
 	(function (){
@@ -682,6 +652,102 @@ _command_webtool.$TOOL = { //
 	})
 
 
+	// ------------------------------------------------------------
+	,
+	tweetbuzz:
+	//
+	(function (){
+		//
+		return _command_webtool._E('img', {
+			alt: 'tweetbuzz'
+			, src: ('http://tools.tweetbuzz.jp/imgcount?url='+ location.href.replace(/#/,'%23'))
+			, border: 0
+			,
+			onclick: (function (){
+				_command_webtool.add_frame(_command_webtool._E('iframe', {
+					src: ('http://tweetbuzz.jp/redirect?url='+ location.href.replace(/#/,'%23'))
+				}));
+			})
+		});
+		//
+	})
+
+
+	// ------------------------------------------------------------
+	,
+	//
+	twitter:
+	//
+	(function (){
+		//
+		_command_webtool
+		._tool_twitter_counter_id = '_command_webtool_tool_twitter_counter';
+		//
+		_command_webtool._tool_twitter_counter_cb = function (_data){
+			document.getElementById(_command_webtool._tool_twitter_counter_id)
+			.innerHTML = _data.count
+			;
+		};
+		//
+		return _command_webtool._E('tt', {
+			style: {
+				display: 'inline'
+				, padding: '2px'
+				, background: '#cfcfcf none'
+				, align: 'center'
+			}
+		}, [
+			_command_webtool._E('img', {
+				alt: 'ヒ'
+				, src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAABZ0RVh0Q3JlYXRpb24gVGltZQAxMS8xNC8wOb/e6gkAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzQGstOgAAABPUlEQVQ4jZWSsU7DMBCGvyQuGcKAhJAsKkYEU1+gQ16hYusb8ALsrDxHB8b2FRi6dWJiQWKpFKkj2JC4thlKSdJEjXKSpdP5/z/dnR2sVqszYAGk9IsXYCKAhZQyHQ6Hvdzr9TrNsmwhgFRKibW2F0BKSZZlqQBq5twFGL/LBwHEoT8KagAMgsnbAIDZteEisgRdAOfcf8GHoP547z8Bp4koxd4ivG0CavOHZfrwUZqTCOa3nmBbdAAGR/o91LYBqvPeS8vd+W68LwuYohsgKpfK1tfnnMd1AcKtYZQIXlXAbBMy2+yWkkQwv/EY/VkDhHvA/phvxePVllHSfH9/oG3twGqFcI6ny4ToJC7N3mG0at9B9R8AFFpRaNXooC0EsNRaj+M47hRXI89zgKUApnmePxdFMe4D8N4vgekve0CpPyHgmZ4AAAAASUVORK5CYII='
+				, border: 0
+				, align: 'middle'
+				,
+				style: {padding: '2px'}
+				,
+				onclick: (function (){
+					_command_webtool.add_frame(_command_webtool._E('iframe', {
+						src: (
+							'http://twitter.com/share?' +[
+								'url='+ encodeURIComponent(location.href.replace(/#/,'%23'))
+								, 'text='+ encodeURIComponent(document.title)
+								, 'via='+ location.host
+							].join('&')
+						)
+						, style: {height: '275px'}
+					}));
+				})
+			})
+			,
+			//
+			_command_webtool._E('a', {
+				'id': _command_webtool._tool_twitter_counter_id
+				, title: 'twitter'
+				, href: 'http://twitter.com/search?q='+ encodeURIComponent(location.href.replace(/#/,'%23'))
+				, target: 'twitter'
+				, style: {
+					color: '#101010'
+					, font: 'bold 11px monospace'
+					, textDecoration: 'none'
+				}
+			}, [ document.createTextNode('0') ])
+			,
+			//
+			_command_webtool._E('script', {
+				'type': 'text/javascript'
+				, 'src': 'http://urls.api.twitter.com/1/urls/count.json?'
+					+'url='+ encodeURI(location.href)
+					+'&callback=_command_webtool._tool_twitter_counter_cb'
+
+			}, [])
+		]);
+		//
+	})
+
+
+
+
+
 //
 };
 //
@@ -713,4 +779,3 @@ _command_webtool.$TOOL = { //
 
 
 //
-
