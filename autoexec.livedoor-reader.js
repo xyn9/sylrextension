@@ -576,7 +576,7 @@ _this_.hatena_star = function (_tab_index){
 		});
 		//
 		return ([
-			'<input
+			'<input'
 			, 'type="button"'
 			, 'id="'+ btn_id +'"'
 			, 'class="'+ $_label +'_off"'
