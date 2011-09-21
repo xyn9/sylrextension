@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.nicovideo
-// @version 0.92
+// @version 0.93
 // @include nicovideo.jp
 // @description ニコニコ動画用自動実行拡張
 // @homepage http://xyn9.github.com/sylrextension
@@ -58,7 +58,11 @@ _this_.player_links = function (){
 		}, [ document.createTextNode(__opt.text) ]);
 	}
 	//
-	var $_header = document.getElementById('des_2');
+	var $_header = document.getElementsByTagName('h1');
+	$_header = $_header.length
+	? $_header[0].parentNode
+	: document.getElementById('WATCHHEADER')
+	;
 	$_header.insertBefore(
 		//
 		_sylera.external.element('div', {
@@ -107,13 +111,18 @@ _this_.player_links = function (){
 
 
 
+
 // ------------------------------------------------------------
 _this_.dl_links = function (){
 	//
 	var $_label = $ID +'_dl_links';
 	//
 	var block = document.getElementById($_label);
-	var $_box = document.getElementById('WATCHHEADER');
+	var $_box = document.getElementsByTagName('h1');
+	$_box = $_box.length
+	? $_box[0].parentNode
+	: document.getElementById('WATCHHEADER')
+	;
 	//
 	if((block != null) || ($_box == null)){ return ; }
 	//
@@ -123,52 +132,19 @@ _this_.dl_links = function (){
 			padding: '0.5em'
 			, fontSize: '90%', fontWeight: 'bold'
 		}
-	}, [ document.createTextNode('ダウンロード： ') ]);
+	}, [
+		document.createTextNode('ダウンロード： ')
+		,
+		_sylera.external.element('a', {
+			href: ('http://www.nicozon.net/flv/'+ $V_ID)
+			, target: 'nicovideo_dl'
+			, style: {color:'red'}
+		}, [ document.createTextNode($V_ID) ])
+	]);
 	//
 	$_box.appendChild(block);
-	// ------------------------------------------------------------
-	//
-	var $_http = new XMLHttpRequest();
-	with( $_http ){
-		//
-		open('GET', 'http://www.nicovideo.jp/api/getflv?v=' + $V_ID, true);
-		//
-		onload = function (){
-			//
-			var src_text = $_http.responseText;
-			var v_url = decodeURIComponent( src_text.replace(/.+&url=([^&]+)&.+/i,"$1") )
-			.replace(/(smile\?s=[\d\.]+)$/i,"$1as3")
-			;
-			//
-			with( document.getElementById($_label) ){
-				appendChild( document.createTextNode(
-					$V_LABEL
-					+'.'+ (
-						/smile\?([a-z])=/.test( v_url.toLowerCase() )
-						? ({'v':'flv', 'm':'mp4', 'n':'swf', 's':'swf'})[ RegExp.$1 ]
-						: 'flv'
-					)
-					+ ' / '
-				) );
-				appendChild(
-					_sylera.external.element('a', {
-						href: v_url.replace(/low$/i,''), style: {color:'red'}
-					}, [ document.createTextNode('high') ])
-				);
-				appendChild( document.createTextNode(' ') );
-				appendChild(
-					_sylera.external.element('a', {
-						href: v_url.replace(/(low)?$/i,'low'), style: {color:'gray'}
-					}, [ document.createTextNode('low') ])
-				);
-			}
-		};
-		//
-		send(null);
-	}
 	//
 };
-
 
 
 
@@ -195,6 +171,15 @@ _this_.init = function (_id){
 	}
 	//
 	if( (/\/watch\//i).test(location.pathname) ){
+		//
+		try {
+			hideOBJ('des_short'); showOBJ('des_full');
+		}
+		catch(_e){
+			try {
+				hideOBJs('des_short'); showOBJs('des_full');
+			} catch(__e){}
+		}
 		//
 		_this_.player_links();
 		_this_.dl_links();
