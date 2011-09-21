@@ -45,6 +45,9 @@ var _this_ = this;
 
 //
 var $ID = '_autoexec_twitter';
+//
+var $USER;
+//
 // ------------------------------------------------------------
 function create_script(_content, _src){
 	var scr = document.createElement('script');
@@ -405,10 +408,7 @@ _this_.check_relationship = new (function (){
 			document.body.appendChild(
 				create_script('', '/users/show.json?'
 					+'callback='+ $ID +'.check_relationship.scan'
-					+ '&screen_name='+ (_sylera.external.evaluateXPath(
-						(document.getElementsByTagName('head'))[0]
-						, '//meta[@name="session-user-screen_name"]'
-					))[0].getAttribute('content')
+					+ '&screen_name='+ $USER
 				)
 			);
 		}
@@ -449,11 +449,20 @@ _this_.init = function (_id){
 		return ;
 	}
 	//
+	try {
+		//
+		$USER = (_sylera.external.evaluateXPath((document.getElementsByTagName('head'))[0], './meta[@name="session-user-screen_name"]'))[0]
+		.getAttribute('content');
+	}
+	catch(_e){
+		$USER = 0;
+	}
+	//
 	if( (/^\/following/i).test(location.pathname) ){
 		return _this_.check_relationship.init();
 	}
 	//
-	if( (/^\/\w+(\/(favorites(\?[^\?]+)?|status(es)?\/\d+)?)?$/i).test(location.pathname) ){
+	if(document.getElementById('content') != null){
 		//
 		try {
 			_this_.onPageChange = window.onPageChange;
@@ -505,15 +514,7 @@ _this_.init = function (_id){
 		marker.id = _label;
 		(document.getElementsByTagName('head'))[0].appendChild(marker);
 		//
-		if(
-			(document.getElementById('timeline') != null)
-			|| (/^\/(home|((\w+\/)?(favorites|follow(ing|ers)|status(es)?\/\d+))?|public_timeline)$/i)
-			.test(location.pathname)
-		){
-			//
-			_autoexec_twitter.init(_label);
-			//
-		}
+		_autoexec_twitter.init(_label);
 		//
 	}
 	//
