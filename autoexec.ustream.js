@@ -5,7 +5,7 @@
 // @version 0.9
 // @include www.ustream.tv
 // @require ./_sylera.external.element.js
-// @description ustream—p©“®ÀsŠg’£
+// @description ustreamç”¨è‡ªå‹•å®Ÿè¡Œæ‹¡å¼µ
 // @homepage http://xyn9.github.com/sylrextension
 //
 // @author xyn9 <xyn9.mail@gmail.com>
