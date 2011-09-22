@@ -419,7 +419,7 @@ _this_.player = function (_tab_index){
 		//
 		var current_item = $('item_'+ __item.id);
 		var media_link = (/^http:\/\/(www\.)?youtube\.com\//i).test(__item.link)
-		? __item.link
+		? __item.link.replace(/(\?[^\?]+)$/,"$1&fmt=5")
 		: (_sylera.external.evaluateXPath(current_item, './/*[@class="enclosure"]/a'))[0]
 		;
 		//
@@ -485,108 +485,41 @@ _this_.player = function (_tab_index){
 
 
 
-// hatena_star
+// star
 // ------------------------------------------------------------
-_this_.hatena_star = function (_tab_index){
+_this_.star = function (_tab_index){
 	//
-	var $_label_s = '_hatena_star';
-	var $_label = $ID + $_label_s;
-	var $_tab_index = _tab_index;
-	// ------------------------------------------------------------
+	var $_label = $ID +'_hatena_star';
+	//
 	document.getElementsByTagName('head')[0]
-	.appendChild( _sylera.external.element('style', {
-		innerHTML: [
-			''
-			, 'input.'+ $_label +'_on'
-			, ', input.'+ $_label +'_off'
-			, '{'
-				, 'cursor: pointer;'
-				, 'width: 2.5ex; height: 16px;'
-				, 'margin: 2px 1px -1px 1px;'
-				, 'border: none 1px;'
-				, 'background-color: transparent;'
-				, 'background-repeat: no-repeat;'
-				, 'font-size: 13px;'
-				, 'font-weight: bold;'
-				, 'text-align: center;'
-			, '}'
-			,
-			'input.'+ $_label +'_off{'
-				, 'color: #666666;'
-				, 'background-image: URL(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAIxSURBVHjaYnz9/D4DLrBkxYYoAQG+pR8+fIqOiQhYhk0N079//xiwYaBmCQ4O9qWmRnogdZm41DH9//+fARsGgnB5WWkGEWFBBh5uLptlqzYpYlOH0wVAECUnIwlmy8tJg/ix2NSxrFy7lRkoaQD1EhsQ64IYQFvNgP4HK5IFGnT1+u0ooNoXQKnvQHwNqv4LCyMj4x8Bfl5IgDAxMfDx8YDZosJCMJcwcHNxMqirKqr/+v175t+//xg+f/4CFv/z5y8DC9Af/sDA2mhsoMPAysqCEsIwA0BAS0MFRe7jp88MJ89cYmCeNqnr5tnzVzmePHtpIwh0MjsbKwOugIXhR4+fMZw6e4nh589f6Yy3r58Hm7hlx4FkZmamOdpAm+RkpbCmC5Dzr1y7xfD46YsFQO50Hw+HU4w3r56FK9i26xAoMOdYWxgZ80PDAhncufeI4dadB31ebnbFMDGWv3//Iqt5BAwHY24uDgY0cTCABrYZshwTWtx7CAsJgP0J4v/69ZsBGDZweT5ebgY2VlabnXuPimJNiUDgLQI14M3b9wzHTl0Axv+dBWfOX2X49v0H2EYxUSEQFYKREvccOMEMTBNRoHRw7eY9hvOXbuwAhrK/k51Z4vsPn8pOnL7E8OTpCwZhIX6wRfCUCLUZBKRBUXju4nWGHz9+VjramnaABEHyQHb3/sOnd9+4/SATGA5poBiA6WO8cOYIPECAiuSAFDNQA848DlRjD5Q/COMDBBgA5+mEjLsOAgUAAAAASUVORK5CYII=);'
-			, '}'
-			,
-			'input.'+ $_label +'_on{'
-				, 'color: #666600;'
-				, 'background-image: URL(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAIiSURBVHjahFM9aBRREP7m7d5uDhM2OfVyQe9AG5uLP0RTSCDYKSFeIwgnFqIodkJAooWtoiiCRVSuSBMFG/8QREQMgkUQQYxaBoNK4g8YNO7/e87u/Xhn9nRgeDPv+2Z25s0sKXsU7cQZf1GmXHpKLdgHOs5tv5HEEZASScrBOepKTaX25iPe8XY8ThAiUYH9omhBFNKgHmPIOf1yQxLvXwnKWr8V29qW7sg/mMTTnTOzGoNbay0ZrP2RQRljUPSlgDCAVuxE8PRzmbkLDNmsb2v8nzoIgciZVVcjUNaoPg6XHgXHyboF9J09m5QTXoOvoL568b3yFHQolNCp3TVG1wCmaH3iWoJI9GGrBZKLHvzbX0Dy4w645z+cJUsfT5UyoJyB/0k4u4zg0XcgUMdIzlfbdy8uHoZOFX1XF7TN6eTIQCF4/APhG3uSvQlzrHeG5FyxgbuXv0XZKkbZGqCsvvLLMzaC578umSdWjzVaa+6TZR4dNECZ1v7rQn0UHYPNmIidugK7RZ6nKmu+7XO5TgMXWU6SpiH3ytLaxt1fyzOiFSi25Xsf3k0u+Yk76d+xoZY4QPHmbYwntW/FJrpXHY13oky9/FDTPKIH3kO1rErm0dQh+Ume9G65XI0PkY/bGGlKUPsxgHW0CvDvBwjfyVPmEW0P670I4/MCfGwLnoXXw1dxpRP1OJKv1/+ZQiUsRPvIAXPtdoA5w4xP1/3fAgwAwNYtf4JjIOIAAAAASUVORK5CYII=);'
-			, '}'
-			,
-			'iframe.'+ $_label +'{'
-				, 'width:99%; height:19em;'
-				, 'border:dotted 1px gray;'
-			, '}'
-
-		].join('\n')
-	}) );
+	.appendChild( _sylera.external.element('script', {
+		type: 'text/javascript'
+		, src: 'http://s.hatena.ne.jp/js/HatenaStar.js'
+	}));
 	//
-	// ------------------------------------------------------------
-	_this_[$_label_s +'_create_comment_view'] = function (__id, __link){
+	channel_widgets.add('hatena star cnt', function (__feed, __items){
 		//
-		var comment_view = $($_label +'_comment_'+ __id);
-		if(comment_view != null){
-			comment_view.style.display = (comment_view.style.display == 'none')
-			? 'block' : 'none'
-			;
-			return;
-		}
-		comment_view = _sylera.external.element('iframe', {
-			src: ('http://s.hatena.ne.jp/mobile/entry?uri='+ encodeURIComponent(__link))
-			, id: ($_label +'_comment_'+ __id)
-			, className: $_label
-			, tabIndex: ++$_tab_index
-		});
-		//
-		$('item_'+ __id).appendChild(comment_view);
-		//
-		comment_view.focus();
-	};
-	// ------------------------------------------------------------
+		Hatena.Star.SiteConfig = {
+			'entryNodes': {
+				'.item_header': {
+					'uri': '.item_title a'
+					, 'title': '.item_title a'
+					, 'container': '.item_title'
+				}
+			}
+		};
+		return '';
+	});
+	//
+	entry_widgets.add($_label, function (__feed, __item){
+		return '<script>Hatena.Star.EntryLoader.loadNewEntries( $("item_'+ __item.id +'") );</script>';
+	});
 	//
 	register_hook('AFTER_PRINTFEED', function (__feed){
 		//
-		for(var i=0, item; i<__feed.items.length; i++){
-			item = __feed.items[i];
-			$('right_body').appendChild( _sylera.external.element('script', {
-				type: 'text/javascript'
-				, src: 'http://s.hatena.ne.jp/entry.simple.json?timestamp=1&callback='+ $ID +'.'+ ($_label_s +'_counter_cb_'+ item.id) +'&uri='+ encodeURI(item.link)
-			}) );
-		}
+		Hatena.Star.EntryLoader.loadNewEntries( $('right_body') );
 		//
 	});
-	//
-	entry_widgets.add($_label, function(__feed, __item){
-		//
-		var btn_id = $_label +'_icon_'+ __item.id;
-		//
-		_this_[($_label_s +'_counter_cb_'+ __item.id)] = (function (___data){
-			var btn = $(btn_id);
-			if( Math.abs(btn.value = (___data.entries[0] || {stars:[]}).stars.length) ){
-				btn.className = $_label +'_on';
-			}
-		});
-		//
-		return ([
-			'<input'
-			, 'type="button"'
-			, 'id="'+ btn_id +'"'
-			, 'class="'+ $_label +'_off"'
-			, 'value="-"'
-			, 'title=" ★ "'
-			, 'onclick="'+ $ID +'.'+ $_label_s +'_create_comment_view(\''+ __item.id +'\',\''+ __item.link +'\');"'
-			, '/>'
-		].join(' '));
-		//
-	}, 'hatena star');
 	//
 };
 
@@ -597,7 +530,7 @@ _this_.hatena_star = function (_tab_index){
 // ------------------------------------------------------------
 _this_.another_useful = new (function (){
 	/*
-		another useful greasemonkey scripts
+			another useful greasemonkey scripts
 	*/
 	// ------------------------------------------------------------
 	// ==UserScript==
@@ -676,10 +609,10 @@ _this_.init = function (_id){
 	var $load = function (_label){ _this_[_label]($tab_index -= 1000); };
 	//
 	$load('key_config');
+	$load('star');
 	$load('player');
 	$load('hatena_bookmark');
 	$load('twitter_url');
-	$load('hatena_star');
 	//
 	if( (/livedoor/i).test(location.domain) ){
 		//
