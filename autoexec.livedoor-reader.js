@@ -44,36 +44,6 @@ if(! _sylera.include){
 }
 //
 // ------------------------------------------------------------
-// autoexec
-
-
-
-
-
-//
-	try { _sylera.__EXTENSION_DIR__; } catch(_e){ //
-//
-_sylera = {
-	//
-	API: Components.classes["@mozilla.org/sylera-api;1"].getService(Components.interfaces.nsISyleraAPI)
-	,
-	//
-	__EXTENSION_DIR__: Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile).path +'/sylrextension'
-	,
-	//
-	external: {}
-	//
-};
-//
-	} // catch
-//
-if(! _sylera.include){
-	_sylera.include = function (_path){
-		return Components.classes['@mozilla.org/moz/jssubscript-loader;1'].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript('file:///' + _path)
-	};
-}
-//
-// ------------------------------------------------------------
 //
 	try { _autoexec_livedoor_reader; } catch(_e){ _autoexec_livedoor_reader = new (function () { //
 //
@@ -100,7 +70,6 @@ _this_.key_config = function (_tab_index){
 	//
 	with( Keybind ){
 		//
-/*
 		remove('ctrl+shift'); remove('shift+ctrl');
 		remove('enter'); remove('ctrl+enter'); remove('shift+enter');
 		//remove('space'); remove('ctrl+space'); remove('shift+space');
@@ -108,7 +77,6 @@ _this_.key_config = function (_tab_index){
 		remove('pagedown');
 		remove('up'); remove('shift+up');
 		remove('down'); remove('shift+down');
- */
 		// ------------------------------------------------------------
 		add('j', function (){
 			var container = $("right_container");
@@ -415,51 +383,70 @@ _this_.player = function (_tab_index){
 	var $_label = $ID +'_player';
 	var $_tab_index = _tab_index;
 	// ------------------------------------------------------------
+	with( document.getElementsByTagName('head')[0] ){
+		appendChild( _sylera.external.element('style', {
+			innerHTML: [
+				''
+				,
+				'.'+ $_label +'{'
+					, 'zIndex: -1;'
+					, 'width:330px; height: 250px;'
+					, 'padding: 1em;'
+					, 'cursor: pointer;'
+					, 'border: gray 1px dotted;'
+					, 'background-color: black;'
+				, '}'
+				,
+				'.'+ $_label +' embed'
+				, ', .'+ $_label +' object'
+				, '{'
+					, 'width:320px; height: 240px;'
+					, 'background-color: black;'
+				, '}'
+			].join('\n')
+		}) );
+	}
+	// ------------------------------------------------------------
+	//
+	_this_.player_callback = function (__id, __data){
+		document.getElementById(__id).innerHTML = __data.html;
+	};
+	// ------------------------------------------------------------
 	function create_player(__item){
 		//
 		var current_item = $('item_'+ __item.id);
-		var media_link = (/^http:\/\/(www\.)?youtube\.com\//i).test(__item.link)
-		? __item.link.replace(/(\?[^\?]+)$/,"$1&fmt=5")
-		: (_sylera.external.evaluateXPath(current_item, './/*[@class="enclosure"]/a'))[0]
-		;
 		//
-		if( media_link ){
-			//
-			var player_view = _sylera.external.element('iframe', {
-				'id': ($_label + __item.id)
-				, className: $_label
-				, src: (
-					'http://w.longtailvideo.com/players/player.swf?'
-					+ 'file='+ encodeURIComponent(media_link)
-					+ '&autostart=1&bufferlength=9'
-				)
-				,
-				style: {
-					'tabIndex': ++$_tab_index
-				}
-				, onclick: (function (){ this.parentNode.removeChild(this); })
-			}, []);
-			//
-			$('item_body_'+ __item.id).appendChild(player_view);
-			//
-			player_view.focus();
+		var player_view = _sylera.external.element('div', {
+			'id': ($_label + __item.id)
+			, className: $_label
+			, style: {'tabIndex': ++$_tab_index}
+			, onclick: (function (){ this.parentNode.removeChild(this); })
+		}, []);
+		//
+		with( player_view ){
+			appendChild(
+				_sylera.external.element('script', {
+					type: 'text/javascript'
+					, innerHTML: (
+						'function '+ player_view.id +'_cb(_data){ '
+							+ $ID +'.player_callback("'+ player_view.id +'", _data);'
+						+ ' }'
+					)
+				})
+			);
+			appendChild(
+				_sylera.external.element('script', {
+					type: 'text/javascript'
+					, src: ('http://api.embed.ly/1/oembed?callback='+ player_view.id +'_cb&url='+ encodeURIComponent(__item.link))
+				})
+			);
 		}
+		//
+		$('item_body_'+ __item.id).appendChild( player_view );
+		//
+		player_view.focus();
+		//
 	}
-	// ------------------------------------------------------------
-	document.getElementsByTagName('head')[0]
-	.appendChild( _sylera.external.element('style', {
-		innerHTML: [
-			''
-			, '.'+ $_label +'{'
-				, 'zIndex: -1;'
-				, 'width:330px; height: 250px;'
-				, 'padding: 1em;'
-				, 'cursor: pointer;'
-				, 'border: gray 1px dotted;'
-				, 'background-color: black;'
-			, '}'
-		].join('\n')
-	}) );
 	// ------------------------------------------------------------
 	with( window.Keybind ){
 		//
@@ -473,9 +460,7 @@ _this_.player = function (_tab_index){
 				return;
 			}
 			//
-			player_view.style.display = (player_view.style.display == 'none')
-			? 'block' : 'none'
-			;
+			player_view.style.display = (player_view.style.display == 'none') ? 'block' : 'none';
 		});
 	}
 	//
@@ -606,7 +591,7 @@ _this_.init = function (_id){
 	// ------------------------------------------------------------
 	//
 	var $tab_index = 0x7FFF;
-	var $load = function (_label){ _this_[_label]($tab_index -= 1000); };
+	var $load = function (_label){ new _this_[_label]($tab_index -= 1000); };
 	//
 	$load('key_config');
 	$load('star');
