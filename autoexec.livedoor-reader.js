@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.livedoor-reader
-// @version 0.93
+// @version 0.95
 // @include reader.livedoor.com
 // @require ./_sylera.external.element.js
 // @require ./_sylera.external.evaluateXPath.js
@@ -70,13 +70,15 @@ _this_.key_config = function (_tab_index){
 	//
 	with( Keybind ){
 		//
+/*
 		remove('ctrl+shift'); remove('shift+ctrl');
 		remove('enter'); remove('ctrl+enter'); remove('shift+enter');
-		//remove('space'); remove('ctrl+space'); remove('shift+space');
+		remove('space'); remove('ctrl+space'); remove('shift+space');
 		remove('pageup');
 		remove('pagedown');
 		remove('up'); remove('shift+up');
 		remove('down'); remove('shift+down');
+ */
 		// ------------------------------------------------------------
 		add('j', function (){
 			var container = $("right_container");
@@ -96,21 +98,17 @@ _this_.key_config = function (_tab_index){
 		// ------------------------------------------------------------
 		add('A', Control.toggle_show_all);
 		add('R', Control.mark_all_read);
+		//
 		add('P', function (){
-			var pin_view = document.createElement('ol');
-			with( pin_view ){
-				tabIndex = ++$_tab_index;
-				className = 'FlatMenu';
+			if( _this_.key_config_pinstate ){
+				_this_.key_config_pinstate = 0;
+				Control.pin_mouseout();
+				return;
 			}
-			var pin_list = pin.pins;
-			for(var i=0, pin_item=pin_list[i]; pin_item; i++){
-				pin_view.innerHTML += ('<li class="button flat_menu pin_item pin-target"><a href="'+ pin_item.url +'">'+ pin_item.title +'</a></li>');
-				pin_item = pin_list[i];
-			}
-			var r_view = $('right_body');
-			r_view.insertBefore(pin_view, r_view.firstChild);
-			pin_view.focus();
+			Control.pin_hover();
+			_this_.key_config_pinstate = 1;
 		});
+		//
 		add('T', function (){
 			$('subs_container').focus();
 			var item_list = $('subs_body').childNodes;
@@ -384,6 +382,7 @@ _this_.player = function (_tab_index){
 	var $_tab_index = _tab_index;
 	// ------------------------------------------------------------
 	with( document.getElementsByTagName('head')[0] ){
+		//
 		appendChild( _sylera.external.element('style', {
 			innerHTML: [
 				''
@@ -395,6 +394,7 @@ _this_.player = function (_tab_index){
 					, 'cursor: pointer;'
 					, 'border: gray 1px dotted;'
 					, 'background-color: black;'
+					, 'color: orange;'
 				, '}'
 				,
 				'.'+ $_label +' embed'
@@ -409,7 +409,68 @@ _this_.player = function (_tab_index){
 	// ------------------------------------------------------------
 	//
 	_this_.player_callback = function (__id, __data){
-		document.getElementById(__id).innerHTML = __data.html;
+		//
+		if( __data.html ){
+			document.getElementById($_label + __id).innerHTML = __data.html;
+			return ;
+		}
+		//
+		var $site_list = {
+			//
+			'media': (function (___link, ___title){
+				return _sylera.external.element('nobr', {
+					innerHTML: [
+						'<embed'
+						, 'type="application/x-shockwave-flash"'
+						, 'src="http://player.longtailvideo.com/player.swf"'
+						, 'width="320"'
+						, 'height="240"'
+						, 'bgcolor="black"'
+						, 'allowscriptaccess="always"'
+						, 'allowfullscreen="true"'
+						, 'wmode="transparent"'
+						, 'flashvars="'+ [
+							'file='+ encodeURIComponent(___link.href)
+							, 'title='+ encodeURIComponent(___title)
+							, 'linktarget=_blank'
+						].join('&amp;') +'"'
+						, '/>'
+					].join(' ')
+				});
+			})
+			,
+			//
+			'www.nicovideo.jp': (function (___link, ___title){
+				window.open(
+					('data:text/html;charset=utf-8,'+ encodeURIComponent(
+						'<html>'
+						+ '<head>'
+						+ '<title> '+ ___title +' </title>'
+						+ '<style>embed, object{ width:99%; height:99%; }</style>'
+						+ '</head>'
+						+ '<body bgcolor=black>'
+						+ '<script type="text/javascript"'
+						+ ' src="'+ ___link.href.replace(/:\/\/www\.([^\/]+)\/(watch)\/([0-9a-z]+)/i, "://ext.$1/thumb_$2/$3?w=320&h=240") +'"'
+						+ ' >'
+						+ '</script>'
+						+ '</body></html>'
+					) )
+					, $_label
+				);
+				return document.createTextNode('open new window');
+			})
+		};
+		//
+		var item = document.getElementById('item_'+ __id);
+		var head = document.getElementById('head_'+ __id);
+		//
+		var media_link = _sylera.external.evaluateXPath(item, './/*[@class="item_info"]/*[@class="enclosure"]/a');
+		media_link = (media_link.length ? media_link : head.getElementsByTagName('a'))[0];
+		var site = $site_list[ media_link.host ];
+		//
+		document.getElementById($_label + __id)
+		.appendChild( (site ? site : $site_list['media'])(media_link, head.textContent) );
+		//
 	};
 	// ------------------------------------------------------------
 	function create_player(__item){
@@ -420,7 +481,7 @@ _this_.player = function (_tab_index){
 			'id': ($_label + __item.id)
 			, className: $_label
 			, style: {'tabIndex': ++$_tab_index}
-			, onclick: (function (){ this.parentNode.removeChild(this); })
+			, ondblclick: (function (){ this.parentNode.removeChild(this); })
 		}, []);
 		//
 		with( player_view ){
@@ -429,7 +490,7 @@ _this_.player = function (_tab_index){
 					type: 'text/javascript'
 					, innerHTML: (
 						'function '+ player_view.id +'_cb(_data){ '
-							+ $ID +'.player_callback("'+ player_view.id +'", _data);'
+							+ $ID +'.player_callback("'+ __item.id +'", _data);'
 						+ ' }'
 					)
 				})
