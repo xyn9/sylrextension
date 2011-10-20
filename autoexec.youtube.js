@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.youtube
-// @version 0.92
+// @version 0.93
 // @include youtube.com
 // @require ./_sylera.external.element.js
 // @description YouTube用自動実行拡張
@@ -12,7 +12,6 @@
 // @license (CC) Attribution Share Alike; http://creativecommons.org/licenses/by-sa/2.1/jp
 // ==UserScript==
 //
-// autoexec
 
 
 
@@ -56,134 +55,146 @@ _this_.create_dl_links = function (){
 	//
 	var $_label = $ID +'_dl';
 	//
+	var $_v_fmt_current = (/&fmt=(\d+)/i).test(location.search) ? RegExp.$1 : 34;
+	//
+	var $_v_fmt_list = {
+		5: {label:'flv', color:'black', info:{}}
+		, 6: {label:'flv2', color:'gray', info:{}}
+		, 34: {label:'flv-low', color:'gray', info:{}}
+		, 35: {label:'flv-high', color:'gray', info:{}}
+		, 18: {label:'mp4', color:'red', info:{}}
+		, 22: {label:'HD', color:'blue', info:{}}
+		, 37: {label:'HD-full', color:'blue', info:{}}
+	};
+	//
 	try {
 		//
-		var $_v_id = yt.config_['VIDEO_ID'] +'&t='+ yt.config_['XSRF_TOKEN'];
-		//
+		var $_v_id = yt.config_['VIDEO_ID'];
 		var $_v_url = ((yt.preload.start +'').match(/http[^'\"]+/) +'')
-		.replace(/\/[^\?\/]+\?/,'/videoplayback?')
-		;
+		.replace(/\/[^\?\/]+\?/,'/videoplayback?');
+		//
 	} catch(_e){ return; }
 	//
-	var $_title = (document.getElementsByTagName('h1'))[0]
+	// ------------------------------------------------------------
+	function _T(_text){ return document.createTextNode(_text); }
 	//
-	if(
-		(document.getElementById($_label) == null)
-		&& ($_title != null)
-	){
-		//
-		function dl_link(_fmt, _color, _label){
-			return _sylera.external.element('a', {
-				href: $_v_url.replace(/&itag=(\d+)/i, ('&itag='+ _fmt))
-				, style: {
-					margin:'auto 0.33em auto 0.33em'
-					, color:_color
-					, fontWeight:'bold'
+	function dl_list(_target){
+		var fmt, f, v;
+		for(f in $_v_fmt_list){
+			v = $_v_fmt_list[f];
+			if( v.info.url ){
+				with( _target ){
+					appendChild(
+						_sylera.external.element('a', {
+							href: v.info.url
+							, style: {
+								margin:'auto 0.33em auto 0.33em'
+								, color:v.color
+								, fontWeight:'bold'
+							}
+							, title: (v.info.type + '('+ v.info.quality +')')
+						}, [ _T(v.label) ])
+					);
+					appendChild( _T('|') );
 				}
-			}, [ document.createTextNode(_label) ]);
-		}
-		//
-		function fmt_link(_fmt, _color, _label){
-			return _sylera.external.element('a', {
-				href: (
-					location.pathname
-					+ location.search.replace(/&?fmt=\d+/i,'') +'&fmt='+ _fmt
-				)
-				, style: {fontWeight:'bold', color:_color}
-			}, [ document.createTextNode(_label) ]);
-		}
-		//
-		function _T(_text){ return document.createTextNode(_text); }
-		// ------------------------------------------------------------
-		//
-		document.body.appendChild(
-			_sylera.external.element('div',{id:$_label})
-		);
-		//
-		$_title.style.cssText = 'height:auto; max-height:2.5em; padding:auto;';
-		$_title.appendChild( _sylera.external.element('p', {
-			id: $_label+ '_fmt_link'
-			, style: {
-				fontSize:'15px', fontWeight:'normal'
-				, color: 'darkgray'
 			}
-		}, [
-			document.createTextNode(' ')
-			, fmt_link(5, 'black', 'flv'), _T(' | ')
-			, fmt_link(6, 'gray', 'flv2'), _T(' | ')
-			, fmt_link(34, 'gray', 'flv-low'), _T(' | ')
-			, fmt_link(35, 'gray', 'flv-high'), _T(' | ')
-			, fmt_link(18, 'red', 'mp4'), _T(' | ')
-			, fmt_link(22, 'blue', 'HD')
-		]) );
+		}
 		//
-		document.getElementById('watch-video')
-		.appendChild( _sylera.external.element('p', {
-			id: $_label +'_dl_link'
-			, style: {
-				margin:'1em 0 1.5em 7px'
-				, color:'darkgray'
-				, fontSize:'12px', fontWeight:'normal'
+		return _target;
+	}
+	//
+	function fmt_list(_target){
+		var fmt, f, v, anchor;
+		for(f in $_v_fmt_list){
+			v = $_v_fmt_list[f];
+			anchor = (f == $_v_fmt_current)
+			? _sylera.external.element('a', {
+				name: 'current'
+				, style: {fontWeight:'bold', backgroundColor:v.color, color:'white'}
+			})
+			: _sylera.external.element('a', {
+				href: (location.pathname + location.search.replace(/&?fmt=\d+/i,'') +'&fmt='+ f)
+				, style: {fontWeight:'bold', color:v.color}
+				, title: (v.info.type + '('+ v.info.quality +')')
+			})
+			;
+			anchor.appendChild( _T(v.label) );
+			with( _target ){
+				appendChild( anchor );
+				appendChild( _T(' | ') );
 			}
-			, align:'center'
-		}, [
-			_sylera.external.element('b', {
-				style: {color:'black'}
-			}, [_T('Download: ')])
-			, dl_link('$1', 'black', yt.config_['VIDEO_ID'])
-/*
-			, dl_link(5, 'black', 'flv'), _T(' | ')
-			, dl_link(6, 'gray', 'flv2'), _T(' | ')
-			, dl_link(34, 'gray', 'flv-low'), _T(' | ')
-			, dl_link(35, 'gray', 'flv-high'), _T(' | ')
-			, dl_link(18, 'red', 'mp4'), _T(' | ')
-			, dl_link(22, 'blue', 'HD')
- */
-		]) );
+		}
 		//
+		return _target;
 	}
+	// ------------------------------------------------------------
 	//
-};
-
-
-
-
-
-// ------------------------------------------------------------
-_this_.suspend = function (){
+	var $_title = (document.getElementsByTagName('h1'))[0]
+	if((document.getElementById($_label) != null) || ($_title == null)){ return ;}
 	//
-	try {
-		with( document.getElementById('movie_player') ){
-			setAttribute('swLiveConnect', 'true');
-			Stop();
-			stopVideo();
-		}
+	document.body.appendChild( _sylera.external.element('div', {id:$_label}) );
+	//
+	var $_http = new XMLHttpRequest();
+	with( $_http ){
+		// ref: http://nondelion.com/archives/2009/04/08/2255
+		open('GET', ('/get_video_info?video_id='+ $_v_id), true);
+		//
+		onload = function (){
+			//
+			var v_info = (/&?url_encoded_fmt_stream_map=url%3D([^=&]+)/i).test($_http.responseText)
+			? decodeURIComponent(RegExp.$1).split(/,url=/i)
+			: []
+			;
+			for(var p=0,param; p<v_info.length; p++){
+				param = {};
+				('&url='+ v_info[p]).replace(/&([^&=]+)=([^&]+)/g, function (_$0, _$1,_$2){
+					param[decodeURIComponent(_$1)] = decodeURIComponent(_$2);
+				});
+				try {
+					if(! $_v_fmt_list[param.itag]){
+						$_v_fmt_list[param.itag] = {label: param.quality, color: 'lightgray'};
+					}
+					$_v_fmt_list[param.itag].info = param;
+				} catch(_e){ }
+			}
+			//
+			$_title.style.cssText = 'height:auto; max-height:2.5em; padding:auto;';
+			$_title.appendChild( fmt_list(
+				_sylera.external.element('p', {
+					id: ($_label +'_fmt_link')
+					, style: {
+						fontSize:'15px'
+						, fontWeight:'normal'
+						, color: 'darkgray'
+					}
+				})
+			) );
+			//
+			var v_default = $_v_fmt_list[$_v_fmt_current];
+			//
+			document.getElementById('watch-video').appendChild( dl_list(
+				_sylera.external.element('p', {
+					id: ($_label +'_dl_link')
+					, style: {
+						margin:'1em 0 1.5em 7px'
+						, color:'darkgray'
+						, fontSize:'12px'
+						, fontWeight:'normal'
+					}
+				}, [
+					_sylera.external.element('b', {style: {color:'black'}}, [
+						_T('Download: ')
+						, _sylera.external.element('a', {
+							href: $_v_url
+							, style: {color:'black'}
+						}, [ _T($_v_id) ])
+					])
+				])
+			) );
+		};
+		//
+		send(null);
 	}
-	catch(_e){ }
-	//
-};
-
-
-
-
-
-// ------------------------------------------------------------
-_this_.show_description = function (){
-	//
-	try {
-		var desc_element = document.getElementById('watch-description');
-		with( desc_element.style ){
-			height = 'auto';
-			overflow = 'visible';
-		}
-		with( (desc_element.getElementsByTagName('div'))[0].style ){
-			height = 'auto';
-			overflow = 'visible';
-			overflowX = 'visible';
-			overflowY = 'visible';
-		}
-	}
-	catch(_e){ }
 	//
 };
 
@@ -206,7 +217,6 @@ _this_.init = function (_id){
 	//
 	if( (/\/watch/i).test(location.pathname) ){
 		//
-		_this_.show_description();
 		_this_.create_dl_links();
 		//
 	}
@@ -239,8 +249,6 @@ _this_.init = function (_id){
 		//
 		_autoexec_youtube.init(_label);
 	}
-	//
-	_autoexec_youtube.suspend();
 	//
 })( '_autoexec_youtube' );
 //
