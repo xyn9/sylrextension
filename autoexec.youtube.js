@@ -2,7 +2,7 @@
 //
 // ==UserScript==
 // @name autoexec.youtube
-// @version 0.93
+// @version 0.94
 // @include youtube.com
 // @require ./_sylera.external.element.js
 // @description YouTube用自動実行拡張
@@ -51,11 +51,11 @@ var _this_ = this;
 var $ID = '_autoexec_';
 // ------------------------------------------------------------
 //
-_this_.create_dl_links = function (){
+_this_.add_link_fmt = function (){
 	//
-	var $_label = $ID +'_dl';
+	var $_label = $ID +'_fmt';
 	//
-	var $_v_fmt_current = (/&fmt=(\d+)/i).test(location.search) ? RegExp.$1 : 34;
+	var $_v_fmt_current = (/&fmt=([^&]+)/i).test(location.search) ? RegExp.$1 : 34;
 	//
 	var $_v_fmt_list = {
 		5: {label:'flv', color:'black', info:{}}
@@ -70,6 +70,9 @@ _this_.create_dl_links = function (){
 	try {
 		//
 		var $_v_id = yt.config_['VIDEO_ID'];
+/*
+		var $_v_token = yt.config_['XSRF_TOKEN'];
+ */
 		var $_v_url = ((yt.preload.start +'').match(/http[^'\"]+/) +'')
 		.replace(/\/[^\?\/]+\?/,'/videoplayback?');
 		//
@@ -113,7 +116,7 @@ _this_.create_dl_links = function (){
 				, style: {fontWeight:'bold', backgroundColor:v.color, color:'white'}
 			})
 			: _sylera.external.element('a', {
-				href: (location.pathname + location.search.replace(/&?fmt=\d+/i,'') +'&fmt='+ f)
+				href: (location.pathname + location.search.replace(/&?fmt=[^&]+/i,'') +'&fmt='+ f)
 				, style: {fontWeight:'bold', color:v.color}
 				, title: (v.info.type + '('+ v.info.quality +')')
 			})
@@ -129,7 +132,7 @@ _this_.create_dl_links = function (){
 	}
 	// ------------------------------------------------------------
 	//
-	var $_title = (document.getElementsByTagName('h1'))[0]
+	var $_title = (document.getElementsByTagName('h1'))[0];
 	if((document.getElementById($_label) != null) || ($_title == null)){ return ;}
 	//
 	document.body.appendChild( _sylera.external.element('div', {id:$_label}) );
@@ -199,6 +202,78 @@ _this_.create_dl_links = function (){
 };
 
 
+// ------------------------------------------------------------
+_this_.add_link_popup = function (){
+	//
+	var $_label = $ID +'_popup';
+	//
+	try { var $_v_id = yt.config_['VIDEO_ID']; } catch(_e){ return ; }
+	//
+	var $_title = (document.getElementsByTagName('h1'))[0];
+	//
+	if((document.getElementById($_label) == null) && ($_title != null)){
+		//
+		$_title.appendChild(_sylera.external.element('a', {
+			href: ('/embed/'+ $_v_id)
+			, 'id': $_label
+			, className: 'yt-uix-button'
+			,
+			style: {
+				marginLeft: '0.5em', padding: '5px'
+				, textAlign: 'center', verticalAlign: 'center'
+			}
+		}, [
+			_sylera.external.element('span', {
+				style: {
+					paddingLeft: '15px'
+					, backgroundRepeat: 'no-repeat', backgroundImage: 'URL(data:image/gif;base64,R0lGODlhDAAMAJEAAGZmZv///////wAAACH5BAEHAAIALAAAAAAMAAwAAAIalA+ph5rMnDQSwLWaFZm/2FAIJJbXSG5epRYAOw==)'
+					, color:'gray'
+					, textDecoration: 'none'
+				}
+			}, [document.createTextNode('popup')])
+		]) );
+	}
+	//
+};
+
+
+
+
+
+// ------------------------------------------------------------
+/*
+_this_.suspend = function (){
+	//
+	try {
+		with( document.getElementById('movie_player') ){
+			setAttribute('swLiveConnect', 'true');
+			Stop();
+			stopVideo();
+		}
+	}
+	catch(_e){ }
+	//
+};
+ */
+
+
+
+
+
+// ------------------------------------------------------------
+_this_.show_description = function (){
+	//
+	try {
+		document.getElementById('watch-description').className
+		= 'watch-expander yt-uix-expander';
+	}
+	catch(_e){
+		alert(_e.message);
+	}
+	//
+};
+
+
 
 
 
@@ -217,7 +292,9 @@ _this_.init = function (_id){
 	//
 	if( (/\/watch/i).test(location.pathname) ){
 		//
-		_this_.create_dl_links();
+		_this_.add_link_popup();
+		_this_.add_link_fmt();
+		_this_.show_description();
 		//
 	}
 	//
@@ -249,6 +326,8 @@ _this_.init = function (_id){
 		//
 		_autoexec_youtube.init(_label);
 	}
+	//
+	_autoexec_youtube.suspend();
 	//
 })( '_autoexec_youtube' );
 //
